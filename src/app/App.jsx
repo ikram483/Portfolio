@@ -31,7 +31,8 @@ import GlobalShare from '../assets/images/GlobalShare.png';
 // import style
 import style from './App.module.css';
 import clsx from 'clsx';
-
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import {db} from "../firebase-config"
 const skills = [
 	{
 		name: 'HTML 5',
@@ -120,8 +121,29 @@ function App() {
 			setLoading(false);
 		}, 2000);
 
+
 	};
 
+
+	const sendDataToFirebase = async (e) => {
+		e.preventDefault();
+		try {
+		  const docRef = await addDoc(collection(db, "1"), {
+			name: e.target.name.value,
+			email: e.target.email.value,
+			message: e.target.message.value,
+			timestamp: new Date()
+		  });
+	  
+		  console.log("Document written with ID: ", docRef.id);
+	
+		  return true;
+		} catch (error) {
+		  console.error("Error adding document: ", error);
+		
+		  return false;
+		}
+	  };
 	return (
 		<div className={style.app}>
 			{/* Navbar */}
@@ -278,7 +300,7 @@ function App() {
 					<h2 className={style.title}>Contact</h2>
 					<p>Feel free to Contact me by submitting the form below and I will get back to you as soon as possible</p>
 					<form
-						ref={form} onSubmit={sendEmail}
+						ref={form} onSubmit={sendDataToFirebase}
 						className={
 							clsx(
 								{ [style['inactive-form']]: loading }
